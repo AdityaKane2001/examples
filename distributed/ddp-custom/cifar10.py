@@ -40,7 +40,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class Net(nn.Module):
+class model(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(1, 6, 5)
@@ -89,7 +89,7 @@ def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(inputs.to(rank))
+            outputs = model(inputs.to(rank))
             loss = criterion(outputs, labels.to(rank))
             loss.backward()
             optimizer.step()
@@ -115,7 +115,7 @@ def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
-                outputs = net(inputs.to(rank))
+                outputs = model(inputs.to(rank))
                 loss = criterion(outputs, labels.to(rank))
 
                 val_labels.append(labels)
@@ -132,7 +132,7 @@ def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
 def main(rank, world_size, epochs):
     ddp_setup(rank, world_size)
     train_dl, test_dl = get_cifar10_dataloaders(batch_size=32)
-    model = Net()
+    model = model()
     optimizer = Adam(model.parameters(), lr=0.0005)
     
     train_and_evaluate(rank, model, optimizer, train_dl, test_dl, epochs)
