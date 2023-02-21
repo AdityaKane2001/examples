@@ -104,7 +104,7 @@ def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
 
 
 
-        net.eval()
+        model.eval()
         with torch.no_grad():
             for i, data in enumerate(testloader, 0):
                 # get the inputs; data is a list of [inputs, labels]
@@ -126,7 +126,7 @@ def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
         print(f'[Epoch {epoch + 1}] val loss: {val_running_loss / 2000:.3f} val accuracy: {accuracy(torch.cat(val_labels, dim=0).detach().cpu().numpy(), torch.cat(val_outputs, dim=0).detach().cpu().numpy(), true_one_hot=False)}')
         
         if rank == 0:
-            torch.save(net.module.state_dict(), "ckpt.pt")
+            torch.save(model.module.state_dict(), "ckpt.pt")
     print('Finished Training')    
 
 def main(rank, world_size, epochs):
