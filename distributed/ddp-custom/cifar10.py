@@ -69,6 +69,10 @@ def accuracy(true, pred, true_one_hot=True, pred_one_hot=True):
 
 def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
     criterion = nn.CrossEntropyLoss()
+
+    model = model.to(rank)
+    model = DDP(model, device_ids=[rank])
+
     
     for epoch in range(epochs):  # loop over the dataset multiple times
         train_running_loss = 0.0
@@ -85,8 +89,8 @@ def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(inputs.to(device))
-            loss = criterion(outputs, labels.to(device))
+            outputs = net(inputs.to(rank))
+            loss = criterion(outputs, labels.to(rank))
             loss.backward()
             optimizer.step()
 
@@ -111,8 +115,8 @@ def train_and_evaluate(rank, model, optimizer, trainloader, testloader, epochs):
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
-                outputs = net(inputs.to(device))
-                loss = criterion(outputs, labels.to(device))
+                outputs = net(inputs.to(rank))
+                loss = criterion(outputs, labels.to(rank))
 
                 val_labels.append(labels)
                 val_outputs.append(outputs)
@@ -129,8 +133,8 @@ def main(rank, world_size, epochs):
     ddp_setup(rank, world_size)
     train_dl, test_dl = get_cifar10_dataloaders(batch_size=32)
     model = Net()
-    model = DDP(model, device_ids=[rank])
     optimizer = Adam(model.parameters(), lr=0.0005)
+    
     train_and_evaluate(rank, model, optimizer, train_dl, test_dl, epochs)
     destroy_process_group()
 
