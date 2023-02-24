@@ -152,7 +152,7 @@ def train_and_evaluate(epochs):
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
-                outputs = model(inputs])
+                outputs = model(inputs)
                 loss = criterion(outputs, labels)
 
                 val_labels.append(labels)
