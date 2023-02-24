@@ -85,13 +85,13 @@ def train_and_evaluate(epochs):
         shuffle=True)
     trainloader = torch.utils.data.DataLoader(
         train_dataset,
-        batch_size=32,
+        batch_size=1024,
         sampler=train_sampler,
         num_workers=2,
         drop_last=True)
     testloader = torch.utils.data.DataLoader(
         test_dataset,
-        batch_size=32,
+        batch_size=1024,
         shuffle=False,
         num_workers=2,
         drop_last=True)
@@ -100,7 +100,7 @@ def train_and_evaluate(epochs):
 
     device = xm.xla_device()
     model = WRAPPED_MODEL.to(device)
-    optimizer = optim.SGD(model.parameters(), lr=lr)
+    optimizer = optim.Adam(model.parameters(), lr=lr)
 
     
 
@@ -136,7 +136,7 @@ def train_and_evaluate(epochs):
     
 
 
-    def eval_epoch():
+    def eval_epoch(testloader):
         val_labels = []
         val_outputs = []
         val_running_loss = 0.0
